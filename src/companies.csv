@@ -1,0 +1,103 @@
+company,sector,hourly,union,livingwage
+3i,Financial Services,4145.05,,Y
+Admiral Group,Nonlife Insurance,611.60,,N
+Anglo-American Plc,Mining,3677.47,,Y
+Antofagasta,Mining,744.10,,N
+Ashtead Group,Support Services,2656.04,,Y
+Associated British Foods,Food Producers,2667.58,"Unite, BFAWU, USDAW",N
+AstraZeneca,Pharmaceuticals,5184.07,"Unite, GMB",Y
+Auto Trader Group,Media,1445.05,,N
+Aviva,Life Insurance,2381.32,Unite,Y
+BAE Systems,Aerospace and Defense,2174.18,,N
+Barclays,Banking,2128.02,Unite,Y
+Barratt Developments,Household Goods and Construction,1544.51,Unite,N
+Berkeley Group Holdings,Household Goods and Construction,4536.26,Unite,N
+BHP,Mining,1932.35,,Y
+BP,Oil and Gas Producers,5560.27,"Unite, GMB, RMT",N
+British American Tobacco,Tobacco,6276.37,Unite,N
+British Land,Real Estate Investment Trusts,1232.97,,N
+BT Group,Telecommunications,1267.58,"CWU, Prospect",N
+Bunzl,Support Services,1548.35,USDAW,N
+Burberry,Personal Goods,3478.02,GMB,Y
+Carnival Corporate and Plc,Travel & Leisure,4735.62,"RMT, Nautilus",N
+Centrica,"Gas, Water, Multi-utilities",930.77,"GMB, Unite, unison",N
+Coca-Cola HBC AG (NF),Beverages,7497.29,,N
+Compass Group,Support Services,2920.33,"Community, USDAW",N
+CRH plc,Construction and Materials,4221.55,,N
+Croda International,Chemicals,1884.87,USDAW,Y
+DCC plc (NF),Support Services,1867.66,,N
+Diageo,Beverages,1867.58,"Unite, GMB",Y
+Direct Line Group,Nonlife Insurance,2380.22,,n
+DS Smith,General Industries,2222.53,"Unite, GMB",N
+easyJet,Travel & Leisure,824.18,"Balpa, Unite, Prospect, AFA-CWA",N
+Evraz,Industrial Metals and Mining,2281.75,,N
+Experian (NF),Support Services,3215.38,USDAW,Y
+Ferguson plc (NF),Support Services,2273.79,,N
+Fresnillo plc,Mining,443.45,,N
+GlaxoSmithKline,Pharmaceuticals,2682.97,"Unite, GMB",Y
+Glencore (NF),Mining,625.80,,Y
+GVC Holdings (NF),Travel & Leisure,10072.45,"Community, USDAW",-
+Halma,Electronics,1182.42,,N
+Hargreaves Lansdown,Financial Services,1372.53,,n
+Hikma Pharmaceticals,Pharmaceuticals,1456.91,,n
+HIscox,Nonlife Insurance,1256.99,,n
+HSBC Holdings,Banking,3343.96,Unite,Y
+Imperial Brands,Tobacco,2162.09,,N
+Informa,Media,2351.06,Unite,Y
+InterContinental Hotels Group,Travel & Leisure,2365.93,Unite,N
+International Airlines Group,Travel & Leisure,2172.53,"Unite, Balpa, gmb",N
+Intertek,Support Services,6419.23,,Y
+ITV plc,Media,1126.37,"Equity, NUJ, Unite, Prospect",Y
+Johnson Matthey,Chemicals,1082.97,"Community, Unite, GMB",N
+Kingfisher plc,General Retailers,869.56,"USDAW, GMB, Unite",N
+Land Securities,Real Estate Investment Trusts,930.22,Unite,Y
+Legal and General,Life Insurance,1896.15,Unite,Y
+Lloyds Banking Group,Banking,3528.57,Unite/Accord,Y
+London Stock Exchange Group,Financial Services,3057.14,,Y
+Marks and Spencers (F),General Retailers,615.38,USDAW,N
+Melrose Industries,Automobilies and Parts,23496.70,,N
+Micro Focus,Software and Computer Services,2321.98,,N
+Mondi,Forestry and Paper,1757.73,,N
+Morrisons,Food and Drugs Retailers,1535.16,USDAW,N
+National Grid plc,"Gas, Water, Multi-utilities",2113.74,,Y
+Next plc,General Retailers,633.52,USDAW,N
+NMC Health,Health Care Equipment and Services,2460.28,,N
+Ocado,Food and Drugs Retailers,639.56,USDAW,N
+Paddy Power Betfair (NF),Travel & Leisure,1759.89,Community,N
+Pearson plc,Media,965.93,,Y
+Persimmon plc,Household Goods and Construction,25871.80,,N
+Prudential plc,Life Insurance,5286.81,Unite,N
+0,0,0.00,#N/A,#N/A
+Reckitt Benckiser,Household Goods and Construction,6857.34,USDAW,N
+RELX Group,Media,5450.55,,Y
+Rentokil Initial,Support Services,2399.89,,N
+Rightmove,Media,949.45,,N
+Rio Tinto Group,Mining,2025.27,,N
+Rolls-Royce Holdings,Aerospace and Defense,1280.77,Unite,N
+Royal Bank of Scotland Group,Banking,1915.93,Unite,Y
+Royal Dutch Shell,Oil and Gas Producers,4291.76,Unite,N
+RSA Insurance Group,Nonlife Insurance,2789.56,Unite,Y
+Sage Group,Software and Computer Services,917.58,,Y
+Sainsbury's,Food and Drugs Retailers,1884.07,"USDAW, Unite",N
+Schroders,Financial Services,3878.57,,Y
+Scottish Mortgage Investment Trust,Equity Investment Instruments,30.66,,N
+Segro,Real Estate Investment Trusts,2105.49,,n
+Severn Trent,"Gas, Water, Multi-utilities",1145.05,"Unison, GMB, Unite",N
+0,0,0.00,#N/A,#N/A
+Smith and Nephew,Health Care Equipment and Services,2081.71,USDAW,Y
+Smiths Group,General Industries,1803.30,,Y
+Smurfit Kappa (NF),General Industries,1164.23,"Unite, GMB, SIPTU (Ireland)",N
+Spirax-Sarco Engineering,Industrial Engineering,1193.96,Unite,n
+SSE plc,Electricity,1607.14,"Prospect, Unison",Y
+St James's Place Plc,Life Insurance,1394.90,,Y
+Standard Chartered,Banking,2573.08,,Y
+Standard Life Aberdeen,Financial Services,1663.74,,Y
+Taylor Wimpey,Household Goods and Construction,2092.86,,N
+Tesco,Food and Drugs Retailers,2678.02,USDAW,N
+TUI Group (NF),Travel & Leisure,2289.50,"Unite, TSSA",N
+Unilever,Personal Goods,5685.13,"Unite, USDAW, GMB",Y
+United Utilities,"Gas, Water, Multi-utilities",1140.11,"Unison, Unite, GMB, Prospect",N
+Vodafone Group,Telecommunications,4386.81,Prospect,N
+Whitbread,Retail Hospitality,1283.52,"Unite, USDAW",N
+Wood Group J,Oil Equipment & Services,780.22,,n
+WPP plc,Media,7653.85,,Y
