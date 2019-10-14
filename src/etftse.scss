@@ -16,6 +16,27 @@ $red: #b70000;
   display: flex;
   flex-wrap: wrap;
 }
+
+// Title
+// Unioin/ living wage.
+.et_ftse-union-living { margin: 0 -1rem; }
+.et_ftse__company-name {
+	padding: 0 1rem;
+	flex: 3 0 280px;
+}
+.et_ftse__company-icons {
+	padding: 0 1rem;
+	flex: 1 0 180px;
+} 
+.et_ftse-livingwage { flex: 0 0 50%; padding: 0.5rem 1rem; }
+.et_ftse-union{  flex: 0 0 50%; padding: 0.5rem 1rem; }
+.et_ftse-union-living {
+  .good { color: $green; }
+  .bad { color: $red; }
+  .meh { color: $grey; opacity: 0.5; }
+}
+
+
 .et_ftse-ceo-chart { padding: 0 1rem; flex: 3 0 280px; overflow: hidden; }
 .et_ftse-ceo-clock { padding: 0 1rem; flex: 1 0 180px; overflow: hidden; }
 
@@ -66,12 +87,17 @@ $red: #b70000;
   opacity: 0;
   transform: rotate3d(1, 1, 1, 45deg);
 }
-// Unioin/ living wage.
-.et_ftse-union-living { margin: 0 -1rem; }
-.et_ftse-livingwage { flex: 0 0 50%; padding: 0.5rem 1rem; }
-.et_ftse-union{  flex: 0 0 50%; padding: 0.5rem 1rem; }
-.et_ftse-union-living {
-  .good { color: $green; }
-  .bad { color: $red; }
-  .meh { color: $grey; opacity: 0.5; }
+// Gender Pay Gap (GPG)
+.et_ftse__gpg-main {
+  display:block;
+	flex: 3 0 280px;
+	padding: 0 1rem;
 }
+.et_ftse__gpg-bonus {
+	padding: 3rem 1rem 0;
+	flex: 1 0 180px;
+	text-align:center;
+}
+
+// In the SVG
+.et_ftse__gpg-date {	font-size: 12px; }

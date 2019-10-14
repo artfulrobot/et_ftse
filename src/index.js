@@ -1,4 +1,7 @@
 import companyData from './companies.csv';
+import gpgData from './gpg.csv';
+import quid from './pound.png';
+
 import './etftse.scss';
 
 class Stats {
@@ -13,7 +16,7 @@ class Stats {
           { name: 'Mean wage', hourly: 14.46 },
           { name: 'Upper Quartile wage', hourly: 17.71 },
         ],
-        companyData: this.parseData(companyData),
+        companyData: this.parseData(companyData, gpgData),
         selectedCompany: null,
         selectedCompanyData: null,
         chartPadding: 12,
@@ -44,6 +47,10 @@ class Stats {
         },
 
         availableWidth: 600,
+
+        gpgBarHeight: 18,
+        gpgTextWidth: 180,
+        gpgBonusRadius: 100,
       },
       computed: {
         companyNames() {
@@ -94,7 +101,40 @@ class Stats {
           }
           xTicks[i-1].path = null;
 
-          return {bars: d, xTicks, scale};
+          // GPG data
+          const gpg = [];
+          var bonusPie = '';
+					var bonusGap = 0.00001;
+
+          if (this.selectedCompany) {
+            var currentPayGap;
+            i = 0;
+            for (row of this.selectedCompanyData.gpg) {
+              currentPayGap = this.chartAnimFraction*this.chartAnimFraction*this.selectedCompanyData.gpg[i].gpgSalary/100;
+              var noPayDay = new Date((new Date('2019-12-31')).setDate(31 - 365*currentPayGap));
+              // Calculate date.
+              gpg.push({
+                x: (1 - currentPayGap) * (this.chartWidth - this.gpgTextWidth),
+                date: noPayDay.getDate() + ' ' +
+                  ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][noPayDay.getMonth()]
+              });
+              i++;
+            }
+
+            // GPG Bonus data.
+            if (this.selectedCompanyData.worstBonusGap) {
+							bonusGap = this.chartAnimFraction*this.chartAnimFraction * this.selectedCompanyData.worstBonusGap.meanBonus2018/100;
+						}
+					}
+					const r = this.gpgBonusRadius;
+					const largeArcFlag = (bonusGap > 0.5) ? 0 : 1;
+					const x1 = r*Math.cos(2*Math.PI * bonusGap/2);
+					const y1 = r*Math.sin(2*Math.PI * bonusGap/2);
+					const x2 = r*Math.cos(-2*Math.PI * bonusGap/2);
+					const y2 = r*Math.sin(-2*Math.PI * bonusGap/2);
+					bonusPie = `M ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2} L 0 0`;
+
+          return {bars: d, xTicks, scale, gpg, bonusPie};
         },
         clockData() {
           // calculate minutes and hours.
@@ -116,6 +156,9 @@ class Stats {
         }
       },
       methods: {
+        percentToXY(percent) {
+					return [Math.cos(2 * Math.PI * percent), Math.sin(2 * Math.PI * percent)];
+        },
         recalculateNewCompany(newVal) {
 
           this.selectedCompanyAnim = null;
@@ -163,7 +206,7 @@ class Stats {
           this.availableWidth = this.$el.offsetWidth;
 
           this.chartWidth = this.$refs.ceochart.offsetWidth - 32;
-          const salaryTextWidthAllowance = 120;
+          const salaryTextWidthAllowance = 80;
 
           if (this.chartWidth < 500) {
             this.chartBarX = this.chartPadding;
@@ -210,114 +253,230 @@ class Stats {
           </div>
         </form>
 
-          <div>
-            <div style="height:2rem"><h2>{{selectedCompany}}</h2></div>
-            <div class="et_ftse-row et_ftse-union-living" >
-              <div class="et_ftse-union">
-                <span v-if="selectedCompanyData && selectedCompanyData.union" class="good">✔ Recognises unions</span>
-                <span v-else-if="selectedCompanyData && !selectedCompanyData.union" class="bad">✖ No union recognition</span>
-                <span v-else class="meh">? Union recognition</span>
-              </div>
-              <div class="et_ftse-livingwage">
-                <span v-if="selectedCompanyData && selectedCompanyData.livingWage" class="good">✔ Living Wage employer</span>
-                <span v-else-if="selectedCompanyData && !selectedCompanyData.livingWage" class="bad">✖ Not a Living Wage employer</span>
-                <span v-else class="meh">? Living Wage employer</span>
-              </div>
+        <div><!-- report -->
+          <div class="et_ftse-row et_ftse-union-living" >
+						<div class="et_ftse__company-name" ><h2>{{selectedCompany}}</h2></div>
+						<div class="et_ftse__company-icons" >
+							<div class="et_ftse-union">
+								<span v-if="selectedCompanyData && selectedCompanyData.union" class="good">✔ Recognises unions</span>
+								<span v-else-if="selectedCompanyData && !selectedCompanyData.union" class="bad">✖ No union recognition</span>
+								<span v-else class="meh">? Union recognition</span>
+							</div>
+							<div class="et_ftse-livingwage">
+								<span v-if="selectedCompanyData && selectedCompanyData.livingWage" class="good">✔ Living Wage employer</span>
+								<span v-else-if="selectedCompanyData && !selectedCompanyData.livingWage" class="bad">✖ Not a Living Wage employer</span>
+								<span v-else class="meh">? Living Wage employer</span>
+							</div>
+						</div>
+					</div>
+
+          <div class="et_ftse-row">
+            <div class="et_ftse-ceo-chart" ref="ceochart">
+              <svg id="salaries-chart" :width="chartWidth" :height="chartHeight" >
+
+                <rect x=0 y=0 :width="chartWidth" :height="chartHeight"
+                  class="salaries-chart__border" style="stroke:none;fill:none;"
+                />
+
+                <!--- axis ticks -->
+                <g :transform="'translate(' + chartBarX + ', 20)'" >
+                  <g v-for="tick in chartData.xTicks" class="et_ftse-axis-ticks" >
+                    <path v-if="tick.path" :d="tick.path" />
+                    <text
+                      text-anchor="middle"
+                      dy="-8"
+                      :x="tick.x"
+                      >{{tick.text}}</text>
+                  </g>
+                </g>
+
+                <!--- bars -->
+                <g v-for="(row, i) in chartData.bars"
+                  :key="row.name"
+                  :transform="'translate(0, ' + (i*(barYOffset + barHeight + barSpacing) + 30) + ')'"
+                >
+                  <text
+                    :text-anchor="chartTextAnchor"
+                    dominant-baseline="middle"
+                    :x="chartTextX"
+                    :dy="barHeight/2" style="fill:black;" >{{row.name}}</text>
+
+                  <rect
+                    v-if="row.width"
+                    :x="chartBarX"
+                    :y="barYOffset"
+                    :width="row.width"
+                    :fill="row.fill"
+                    :height="barHeight"
+                    />
+
+                  <text
+                    v-if="row.width"
+                    :y="barYOffset"
+                    :x="chartBarX + row.width + 8"
+                    :dy="barHeight/2"
+                    dominant-baseline="middle"
+                    class="salary-text"
+                    >£{{ Math.floor(row.hourly * 7 * 260).toLocaleString() }}/year</text>
+                </g>
+              </svg>
             </div>
-
-            <div class="et_ftse-row">
-              <div class="et_ftse-ceo-chart" ref="ceochart">
-                <svg id="salaries-chart" :width="chartWidth" :height="chartHeight" >
-
-                  <rect x=0 y=0 :width="chartWidth" :height="chartHeight"
-                    class="salaries-chart__border" style="stroke:none;fill:none;"
-                  />
-
-                  <!--- axis ticks -->
-                  <g :transform="'translate(' + chartBarX + ', 20)'" >
-                    <g v-for="tick in chartData.xTicks" class="et_ftse-axis-ticks" >
-                      <path v-if="tick.path" :d="tick.path" />
-                      <text
-                        text-anchor="middle"
-                        dy="-8"
-                        :x="tick.x"
-                        >{{tick.text}}</text>
-                    </g>
-                  </g>
-
-                  <!--- bars -->
-                  <g v-for="(row, i) in chartData.bars"
-                    :key="row.name"
-                    :transform="'translate(0, ' + (i*(barYOffset + barHeight + barSpacing) + 30) + ')'"
-                  >
-                    <text
-                      :text-anchor="chartTextAnchor"
-                      dominant-baseline="middle"
-                      :x="chartTextX"
-                      :dy="barHeight/2" style="fill:black;" >{{row.name}}</text>
-
-                    <rect
-                      v-if="row.width"
-                      :x="chartBarX"
-                      :y="barYOffset"
-                      :width="row.width"
-                      :fill="row.fill"
-                      :height="barHeight"
-                      />
-
-                    <text
-                      v-if="row.width"
-                      :y="barYOffset"
-                      :x="chartBarX + row.width + 8"
-                      :dy="barHeight/2"
-                      dominant-baseline="middle"
-                      class="salary-text"
-                      >£{{ Math.floor(row.hourly * 7 * 260).toLocaleString() }}/year</text>
-                  </g>
+            <div class="et_ftse-ceo-clock" ref="ceoclock">
+              <div class="et_ftse-ceo-clock__clock-container">
+                <svg id="salaries-clock" :width="clockSize" :height="clockSize" >
+                  <circle :cy="clockSize/2" :cx="clockSize/2" :r="clockSize/2 -2" />
+                  <line
+                    :transform="clockData.hourHand"
+                    :x2="-clockSize/5"
+                    x1=0 y1=0 y2=0
+                    style="stroke:#009ec6;stroke-width:8px;stroke-linecap:round;stroke-linejoin:miter"
+                    />
+                  <line
+                    :transform="clockData.minHand"
+                    :y2="-clockSize*2/6"
+                    x1=0 y1=0 x2=0
+                    style="stroke:#009ec6;stroke-width:8px;stroke-linecap:round;stroke-linejoin:miter"
+                    />
                 </svg>
               </div>
-              <div class="et_ftse-ceo-clock" ref="ceoclock">
-                <div class="et_ftse-ceo-clock__clock-container">
-                  <svg id="salaries-clock" :width="clockSize" :height="clockSize" >
-                    <circle :cy="clockSize/2" :cx="clockSize/2" :r="clockSize/2 -2" />
-                    <line
-                      :transform="clockData.hourHand"
-                      :x2="-clockSize/5"
-                      x1=0 y1=0 y2=0
-                      style="stroke:#009ec6;stroke-width:8px;stroke-linecap:round;stroke-linejoin:miter"
-                      />
-                    <line
-                      :transform="clockData.minHand"
-                      :y2="-clockSize*2/6"
-                      x1=0 y1=0 x2=0
-                      style="stroke:#009ec6;stroke-width:8px;stroke-linecap:round;stroke-linejoin:miter"
-                      />
-                  </svg>
-                </div>
-                <div class="et_ftse-ceo-clock__text-container" v-show="selectedCompany">
-                  By {{ 9 + Math.floor(hoursToYears) }}:{{ Math.ceil(hoursToYears*60) % 60 }}
-                  <strong>each day</strong> the CEO has been paid the same as
-                  <span v-html="hoursToYearsUnit" ></span>.
-                </div>
+              <div class="et_ftse-ceo-clock__text-container" v-show="selectedCompany">
+                By {{ 9 + Math.floor(hoursToYears) }}:{{ Math.ceil(hoursToYears*60) % 60 }}
+                <strong>each day</strong> the CEO has been paid the same as
+                <span v-html="hoursToYearsUnit" ></span>.
               </div>
-            </div><!-- /.et_ftse-row -->
-          </div>
-      </div>
+            </div>
+          </div><!-- /.et_ftse-row for CEO chart -->
+
+          <div class="et_ftse-row et_ftse__gpg-row" >
+						<div class="et_ftse__gpg-main">
+							<h3>Gender paygap <span v-if="selectedCompanyData">at {{selectedCompany}}</span></h3>
+
+							<p>This chart shows the date in the year where a woman begins working without pay.</p>
+
+							<svg id="et_ftse-gpg-chart"
+								v-if="selectedCompanyData"
+								:width="chartWidth"
+								:height="selectedCompanyData.gpg.length * (gpgBarHeight + barSpacing)" >
+								<g
+									v-for="(company, i) in selectedCompanyData.gpg"
+									:key="company.subCo"
+									:transform="'translate(0, ' + ((barSpacing + gpgBarHeight) * i) + ')'"
+									>
+
+									<!-- company name -->
+									<text
+										dy="14"
+										x="0"
+										y="0"
+										>{{company.subCo}}</text>
+
+									<!-- bars -->
+									<rect
+										:x="gpgTextWidth"
+										y="0"
+										:width="chartWidth - gpgTextWidth"
+										:height="gpgBarHeight"
+										fill="white"
+										stroke="none"
+										/>
+									<!-- data bit -->
+									<rect
+										:x="gpgTextWidth + chartData.gpg[i].x"
+										y="0"
+										:width="chartWidth - gpgTextWidth - chartData.gpg[i].x"
+										:height="gpgBarHeight"
+										fill="#b70000"
+										stroke="none"
+										/>
+									<text
+										text-anchor="end"
+										:x="gpgTextWidth + chartData.gpg[i].x - 8"
+										class="et_ftse__gpg-date"
+										y="0"
+										dy="14"
+										>{{ chartData.gpg[i].date }}</text>
+									<!-- outline on top -->
+									<rect
+										:x="gpgTextWidth"
+										y="0.5"
+										:width="chartWidth - gpgTextWidth"
+										:height="gpgBarHeight"
+										fill="none"
+										stroke-width="1"
+										opacity="0.2"
+										stroke="black"
+										/>
+								</g>
+
+							</svg>
+						</div>
+						<div class="et_ftse__gpg-bonus" >
+							<svg :width="gpgBonusRadius*2" :height="gpgBonusRadius*2"
+								xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+								>
+								<clipPath id="et_ftse__bonusPie-clip">
+									<path :d="chartData.bonusPie" fill="red" />
+								</clipPath>
+								<circle
+										:cx="gpgBonusRadius"
+										:cy="gpgBonusRadius"
+										:r="gpgBonusRadius - 2"
+										fill="white"
+										/>
+								<g :transform="'translate(' + gpgBonusRadius + ' ' + gpgBonusRadius + '), rotate(-90)'" clip-path="url(#et_ftse__bonusPie-clip)">
+									<image href="${quid}" :width="gpgBonusRadius*2" :height="gpgBonusRadius*2"
+										:x="-gpgBonusRadius"
+										:y="-gpgBonusRadius"
+									/>
+								</g>
+							</svg>
+							<p v-if="selectedCompanyData && selectedCompanyData.worstBonusGap" >Women's average bonus at <strong>{{selectedCompanyData.worstBonusGap.Company}}</strong>
+							is {{selectedCompanyData.worstBonusGap.meanBonus2018}}% less than men's.</p>
+						</div>
+
+          </div><!-- /gpg data -->
+        </div><!-- /report -->
+      </div><!-- /et_ftse-container -->
       `
     });
     this.vueApp.recalculateAvailableWidth();
     window.addEventListener('resize', e => this.vueApp.recalculateAvailableWidth());
   }
-  parseData(companyData) {
+  parseData(companyData, gpgData) {
     var d = {};
+    var row, mainCo;
 
-    for (var co of companyData) {
-      if (co.company) {
-        d[co.company] = {
-          hourlyCEOPay: co.hourly,
-          union: co.union ? true : false,
-          livingWage: (co.livingwage === 'Y') ? true : false,
+    for (row of companyData) {
+      if (row.company) {
+        d[row.company] = {
+          hourlyCEOPay: row.hourly,
+          union: row.union ? true : false,
+          livingWage: (row.livingwage === 'Y') ? true : false,
+          gpg: [],
+          worstBonusGap: null,
         };
+      }
+    }
+    for (row of gpgData) {
+      if (row['Parent Company'] && d[row['Parent Company']]) {
+        // Found match.
+        mainCo = d[row['Parent Company']];
+
+        // Exclude companies who have negative Gender pay gaps.
+        if (row.meanSalary2018 >= 0) {
+          mainCo.gpg.push({
+            subCo: row.Company,
+            gpgSalary: row.meanSalary2018,
+            gpgBonus: row.meanBonus2018,
+            gpgSalaryOld: row.meanSalary2017,
+            gpgBonusOld: row.meanBonus2017,
+          });
+        }
+        if (row.meanBonus2018 > 0) {
+          if (mainCo.worstBonusGap === null || mainCo.worstBonusGap.gpgBonus < row.meanBonus2018) {
+            mainCo.worstBonusGap = row;
+          }
+        }
       }
     }
     return d;
