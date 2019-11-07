@@ -2,4 +2,4 @@
 
 ## Building
 
-Run `npm run watch` or `npm run production`
+Run `npm run watch` or `npm run build`
