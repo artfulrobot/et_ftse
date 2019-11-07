@@ -350,12 +350,16 @@ class Stats {
 
           <div class="et_ftse-row et_ftse__gpg-row" >
 						<div class="et_ftse__gpg-main">
-							<h3>Gender paygap <span v-if="selectedCompanyData">at {{selectedCompany}}</span></h3>
+							<h3>Gender pay gap <span v-if="selectedCompanyData">at {{selectedCompany}}</span></h3>
               <div v-if="selectedCompany && selectedCompanyData.gpg.length>0">
-                <p>The data below relates to the subsidiaries owned by
-                <strong>{{selectedCompany}}</strong>. The chart shows the date in
-                the year where a woman effectively begins working without
-                pay.</p>
+
+                <p v-if="selectedCompany && selectedCompanyData.gpg.length > 1">The data below relates to the subsidiaries owned by
+                  <strong>{{selectedCompany}}</strong>. The chart shows the date in
+                  the year where a woman effectively begins working without
+                  pay.</p>
+                <p v-if="selectedCompany && selectedCompanyData.gpg.length == 1">The chart shows the date in
+                  the year where a woman at <strong>{{selectedCompany}}</strong> effectively begins working without
+                  pay.</p>
 
                 <svg id="et_ftse-gpg-chart"
                   v-if="selectedCompanyData"
