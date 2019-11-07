@@ -250,6 +250,7 @@ class Stats {
               <option v-for="company in companyNames"
                 :value="company" >{{ company }}</option>
             </select>
+            <button @click="selectedCompany=null" >Reset</button>
           </div>
         </form>
 
@@ -350,67 +351,75 @@ class Stats {
           <div class="et_ftse-row et_ftse__gpg-row" >
 						<div class="et_ftse__gpg-main">
 							<h3>Gender paygap <span v-if="selectedCompanyData">at {{selectedCompany}}</span></h3>
+              <div v-if="selectedCompany && selectedCompanyData.gpg.length>0">
+                <p>The data below relates to the subsidiaries owned by
+                <strong>{{selectedCompany}}</strong>. The chart shows the date in
+                the year where a woman effectively begins working without
+                pay.</p>
 
-							<p>This chart shows the date in the year where a woman begins working without pay.</p>
+                <svg id="et_ftse-gpg-chart"
+                  v-if="selectedCompanyData"
+                  :width="chartWidth"
+                  :height="selectedCompanyData.gpg.length * (gpgBarHeight + barSpacing)" >
+                  <g
+                    v-for="(company, i) in selectedCompanyData.gpg"
+                    :key="company.subCo"
+                    :transform="'translate(0, ' + ((barSpacing + gpgBarHeight) * i) + ')'"
+                    >
 
-							<svg id="et_ftse-gpg-chart"
-								v-if="selectedCompanyData"
-								:width="chartWidth"
-								:height="selectedCompanyData.gpg.length * (gpgBarHeight + barSpacing)" >
-								<g
-									v-for="(company, i) in selectedCompanyData.gpg"
-									:key="company.subCo"
-									:transform="'translate(0, ' + ((barSpacing + gpgBarHeight) * i) + ')'"
-									>
+                    <!-- company name -->
+                    <text
+                      dy="14"
+                      x="0"
+                      y="0"
+                      >{{company.subCo}}</text>
 
-									<!-- company name -->
-									<text
-										dy="14"
-										x="0"
-										y="0"
-										>{{company.subCo}}</text>
-
-									<!-- bars -->
-									<rect
-										:x="gpgTextWidth"
-										y="0"
-										:width="chartWidth - gpgTextWidth"
-										:height="gpgBarHeight"
-										fill="white"
-										stroke="none"
-										/>
-									<!-- data bit -->
-									<rect
-										:x="gpgTextWidth + chartData.gpg[i].x"
-										y="0"
-										:width="chartWidth - gpgTextWidth - chartData.gpg[i].x"
-										:height="gpgBarHeight"
-										fill="#b70000"
-										stroke="none"
-										/>
-									<text
-										text-anchor="end"
-										:x="gpgTextWidth + chartData.gpg[i].x - 8"
-										class="et_ftse__gpg-date"
-										y="0"
-										dy="14"
-										>{{ chartData.gpg[i].date }}</text>
-									<!-- outline on top -->
-									<rect
-										:x="gpgTextWidth"
-										y="0.5"
-										:width="chartWidth - gpgTextWidth"
-										:height="gpgBarHeight"
-										fill="none"
-										stroke-width="1"
-										opacity="0.2"
-										stroke="black"
-										/>
-								</g>
-
-							</svg>
+                    <!-- bars -->
+                    <rect
+                      :x="gpgTextWidth"
+                      y="0"
+                      :width="chartWidth - gpgTextWidth"
+                      :height="gpgBarHeight"
+                      fill="white"
+                      stroke="none"
+                      />
+                    <!-- data bit -->
+                    <rect
+                      :x="gpgTextWidth + chartData.gpg[i].x"
+                      y="0"
+                      :width="chartWidth - gpgTextWidth - chartData.gpg[i].x"
+                      :height="gpgBarHeight"
+                      fill="#b70000"
+                      stroke="none"
+                      />
+                    <text
+                      text-anchor="end"
+                      :x="gpgTextWidth + chartData.gpg[i].x - 8"
+                      class="et_ftse__gpg-date"
+                      y="0"
+                      dy="14"
+                      >{{ chartData.gpg[i].date }}</text>
+                    <!-- outline on top -->
+                    <rect
+                      :x="gpgTextWidth"
+                      y="0.5"
+                      :width="chartWidth - gpgTextWidth"
+                      :height="gpgBarHeight"
+                      fill="none"
+                      stroke-width="1"
+                      opacity="0.2"
+                      stroke="black"
+                      />
+                  </g>
+                </svg>
+              </div>
+              <div v-if="selectedCompany && selectedCompanyData.gpg.length == 0">
+                <p>Sorry, we don't have any gender pay gap data for {{selectedCompany}}.</p>
+              </div>
 						</div>
-						<div class="et_ftse__gpg-bonus" >
+						<div class="et_ftse__gpg-bonus"
+              v-if="!selectedCompany || (selectedCompany && selectedCompanyData.worstBonusGap)"
+            >
 							<svg :width="gpgBonusRadius*2" :height="gpgBonusRadius*2"
 								xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 								>
