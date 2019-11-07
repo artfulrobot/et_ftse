@@ -250,7 +250,7 @@ class Stats {
               <option v-for="company in companyNames"
                 :value="company" >{{ company }}</option>
             </select>
-            <button @click="selectedCompany=null" >Reset</button>
+            <button @click.prevent="selectedCompany=null" >Reset</button>
           </div>
         </form>
 
