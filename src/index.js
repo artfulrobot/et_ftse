@@ -53,6 +53,21 @@ class Stats {
         gpgBonusRadius: 100,
       },
       computed: {
+        bonusClockTime() {
+          var hours = 9 + Math.floor(this.hoursToYears),
+              mins  = (Math.ceil(this.hoursToYears*60) % 60),
+              ampm  = 'am';
+          if (hours >= 12) {
+            ampm = 'pm';
+          }
+          if (hours > 12) {
+            hours -= 12;
+          }
+          if (mins < 10) {
+            mins = '0' + mins.toString();
+          }
+          return hours + ':' + mins + ' ' + ampm;
+        },
         companyNames() {
           var a = Object.keys(this.companyData);
           a.sort();
@@ -341,7 +356,7 @@ class Stats {
                 </svg>
               </div>
               <div class="et_ftse-ceo-clock__text-container" v-show="selectedCompany">
-                By {{ 9 + Math.floor(hoursToYears) }}:{{ Math.ceil(hoursToYears*60) % 60 }}
+                By {{bonusClockTime}}
                 <strong>each day</strong> the CEO has been paid the same as
                 <span v-html="hoursToYearsUnit" ></span>.
               </div>
