@@ -28,8 +28,8 @@ class Stats {
         chartTextAnchor: 'start',
         chartTextWidth: 200,
         barHeight: 30,
-        barSpacing: 4,
         barYOffset: 0,
+        barSpacing: 4,
 
         chartAnimStart: 0,
         chartAnimFraction: 0,
@@ -48,11 +48,12 @@ class Stats {
 
         availableWidth: 600,
 
-        gpgBarHeight: 18,
-        gpgTextWidth: 180,
         gpgBonusRadius: 100,
       },
       computed: {
+        isMobile() {
+          return (this.availableWidth < 768) ? 1 : 0;
+        },
         bonusClockTime() {
           var hours = 9 + Math.floor(this.hoursToYears),
               mins  = (Math.ceil(this.hoursToYears*60) % 60),
@@ -116,31 +117,13 @@ class Stats {
           }
           xTicks[i-1].path = null;
 
-          // GPG data
-          const gpg = [];
           var bonusPie = '';
 					var bonusGap = 0.00001;
 
-          if (this.selectedCompany) {
-            var currentPayGap;
-            i = 0;
-            for (row of this.selectedCompanyData.gpg) {
-              currentPayGap = this.chartAnimFraction*this.chartAnimFraction*this.selectedCompanyData.gpg[i].gpgSalary/100;
-              var noPayDay = new Date((new Date('2019-12-31')).setDate(31 - 365*currentPayGap));
-              // Calculate date.
-              gpg.push({
-                x: (1 - currentPayGap) * (this.chartWidth - this.gpgTextWidth),
-                date: noPayDay.getDate() + ' ' +
-                  ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][noPayDay.getMonth()]
-              });
-              i++;
-            }
-
-            // GPG Bonus data.
-            if (this.selectedCompanyData.worstBonusGap) {
-							bonusGap = this.chartAnimFraction*this.chartAnimFraction * this.selectedCompanyData.worstBonusGap.meanBonus2018/100;
-						}
-					}
+          // GPG Bonus data.
+          if (this.selectedCompanyData && this.selectedCompanyData.worstBonusGap) {
+            bonusGap = this.chartAnimFraction*this.chartAnimFraction * this.selectedCompanyData.worstBonusGap.meanBonus/100;
+          }
 					const r = this.gpgBonusRadius;
 					const largeArcFlag = (bonusGap > 0.5) ? 0 : 1;
 					const x1 = r*Math.cos(2*Math.PI * bonusGap/2);
@@ -149,7 +132,7 @@ class Stats {
 					const y2 = r*Math.sin(-2*Math.PI * bonusGap/2);
 					bonusPie = `M ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2} L 0 0`;
 
-          return {bars: d, xTicks, scale, gpg, bonusPie};
+          return {bars: d, xTicks, scale, bonusPie};
         },
         clockData() {
           // calculate minutes and hours.
@@ -183,6 +166,7 @@ class Stats {
           if (this.selectedCompany) {
             this.selectedCompanyData = this.companyData[this.selectedCompany];
             var cfRate = this.national[0].hourly;
+            /*
             if (this.national[0].hourly * 7 * 260 / this.selectedCompanyData.hourlyCEOPay <= 8) {
               cfRate = this.national[0].hourly;
               this.hoursToYearsUnit = 'someone on minimum wage earns in a <strong>year</strong>';
@@ -193,11 +177,11 @@ class Stats {
               this.hoursToYearsUnit = 'someone on average wage earns in a <strong>year</strong>';
               this.hoursToYears = this.national[0].hourly * 7 * 260 / this.selectedCompanyData.hourlyCEOPay;
             }
-            else {
-              cfRate = this.national[0].hourly;
-              this.hoursToYears = this.national[0].hourly * 7 * 260/12 / this.selectedCompanyData.hourlyCEOPay;
-              this.hoursToYearsUnit = 'someone on minimum wage earns in a <strong>month</strong>';
-            }
+            else // ...
+            */
+            cfRate = this.national[0].hourly;
+            this.hoursToYears = this.national[0].hourly * 7 * 260/12 / this.selectedCompanyData.hourlyCEOPay;
+            this.hoursToYearsUnit = 'someone on minimum wage earns in a <strong>month</strong>';
 
             this.minsRotationMax = (this.hoursToYears * 60 % 60)/60;
             if (this.hoursToYears <= 5) {
@@ -253,6 +237,136 @@ class Stats {
           else {
             this.chartAnimFraction = 1;
           }
+        }
+      },
+      components: {
+        payGapChart: {
+          data() {
+            return {
+              gpgBarHeight: 18,
+              gpgTextHeight: 18,
+              gpgTextWidth: 300,
+            };
+          },
+          props: ['chartAnimFraction', 'gpgRows', 'isMobile'],
+          computed: {
+            gpgBarMonthDividers() {
+              var top, d = '', left;
+              if (this.isMobile) {
+                top = this.gpgTextHeight;
+                d = `M0,${top}`;
+                left = 0.5;
+              }
+              else {
+                top = 0;
+                left = (this.gpgTextWidth + 0.5);
+              }
+
+              var dayOfYear = 0;
+              var daysInMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+              for (var i=0; i<11; i++) {
+                dayOfYear += daysInMonths[i];
+                d += `M${Math.floor(dayOfYear/365*this.gpgBarWidth) + left},${this.gpgBarHeight+top} l0,-5m0,${-this.gpgBarHeight+10} l0,-5`;
+              }
+              return d;
+            },
+            gpgBarWidth() {
+              if (this.isMobile) {
+                return this.$parent.chartWidth;
+              }
+              else {
+                return this.$parent.chartWidth - this.gpgTextWidth;
+              }
+            },
+            gpg() {
+              if (!this.gpgRows) return [];
+              const gpg = [];
+              var currentPayGap;
+              var i = 0;
+              for (var row of this.gpgRows) {
+                var imbalance = this.gpgRows[i].gpgSalary;
+                if (imbalance < 0) {
+                  // Men. We have: r = (1 - w/m) * 100
+                  // We need       R = (1 - m/w) * 100
+                  // w/m = 1-r
+                  // m/w = 1/(1-r)
+                  // 1- m/w = 1 - (1/(1-r))
+                  //        = -r / (1-r)
+                  // So if r = 20 (women paid 20% less than men, e.g. women: 80, men: 100)
+                  //       R = -0.2/0.8 = -25% (men paid 25% more, e.g. 80 * 1.25 = 100)
+                  imbalance = 100 * (- imbalance / (100 - imbalance));
+                }
+
+                currentPayGap = this.chartAnimFraction*this.chartAnimFraction*imbalance/100;
+                var noPayDay = new Date((new Date('2019-12-31')).setDate(31 - 365*currentPayGap));
+                // Calculate date.
+                gpg.push({
+                  x: (1 - currentPayGap) * (this.gpgBarWidth),
+                  date: noPayDay.getDate() + ' ' +
+                  ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][noPayDay.getMonth()]
+                });
+                i++;
+              }
+              return gpg;
+            },
+          },
+          template: `<svg class="et_ftse-gpg-chart"
+                  :width="$parent.chartWidth"
+                  v-if="gpgRows"
+                  :height="gpgRows.length * (gpgBarHeight + $parent.barSpacing + isMobile*gpgTextHeight)" >
+                  <g
+                    v-for="(company, i) in gpgRows"
+                    :key="company.subCo"
+                    :transform="'translate(0, ' + (($parent.barSpacing + (gpgBarHeight + isMobile*gpgTextHeight)) * i) + ')'"
+                    >
+
+                    <!-- company name -->
+                    <text
+                      dy="14"
+                      x="0"
+                      y="0"
+                      >{{company.subCo}}</text>
+
+                    <!-- background bar -->
+                    <rect
+                      :x="gpgTextWidth * (1-isMobile)"
+                      :y="gpgTextHeight*isMobile"
+                      :width="gpgBarWidth"
+                      :height="gpgBarHeight"
+                      fill="white"
+                      stroke="none"
+                      />
+                    <!-- month dividers -->
+                    <path :d="gpgBarMonthDividers" class="et_ftse-gpg-month-lines" />
+                    <!-- coloured data bar -->
+                    <rect
+                      :x="gpgTextWidth * (1-isMobile) + gpg[i].x"
+                      :y="gpgTextHeight*isMobile"
+                      :width="gpgBarWidth - gpg[i].x"
+                      :height="gpgBarHeight"
+                      fill="#b70000"
+                      stroke="none"
+                      />
+                    <text
+                      text-anchor="end"
+                      :x="gpgTextWidth * (1-isMobile) + gpg[i].x - 8"
+                      :y="gpgTextHeight*isMobile"
+                      class="et_ftse__gpg-date"
+                      dy="14"
+                      >{{ gpg[i].date }}</text>
+                    <!-- outline on top -->
+                    <rect
+                      :x="gpgTextWidth * (1-isMobile) + 0.5"
+                      :y="gpgTextHeight*isMobile + 0.5"
+                      :width="gpgBarWidth"
+                      :height="gpgBarHeight"
+                      fill="none"
+                      stroke-width="1"
+                      opacity="0.2"
+                      stroke="black"
+                      />
+                  </g>
+                </svg>`
         }
       },
       template: `
@@ -365,75 +479,36 @@ class Stats {
 
           <div class="et_ftse-row et_ftse__gpg-row" >
 						<div class="et_ftse__gpg-main">
-							<h3>Gender pay gap <span v-if="selectedCompanyData">at {{selectedCompany}}</span></h3>
-              <div v-if="selectedCompany && selectedCompanyData.gpg.length>0">
+							<h3>Gender pay gap <span v-if="selectedCompanyData">at <span v-if="(selectedCompanyData.gpg.length + selectedCompanyData.gpgMen.length) > 1">subsidiaries owned by</span> {{selectedCompany}}</span></h3>
+              <div v-if="selectedCompany">
 
-                <p v-if="selectedCompany && selectedCompanyData.gpg.length > 1">The data below relates to the subsidiaries owned by
-                  <strong>{{selectedCompany}}</strong>. The chart shows the date in
-                  the year where a woman effectively begins working without
-                  pay.</p>
-                <p v-if="selectedCompany && selectedCompanyData.gpg.length == 1">The chart shows the date in
-                  the year where a woman at <strong>{{selectedCompany}}</strong> effectively begins working without
-                  pay.</p>
+                <div v-if="selectedCompanyData.gpg.length>0">
+                   <p>The chart shows the date in the year where a
+                   <strong>woman</strong> effectively begins working without
+                   pay.</p>
+                  <pay-gap-chart
+                    v-if="selectedCompanyData.gpg.length > 0"
+                    :gpg-rows="selectedCompanyData.gpg"
+                    :chart-anim-fraction="chartAnimFraction"
+                    :is-mobile="isMobile"
+                    />
+                </div>
 
-                <svg id="et_ftse-gpg-chart"
-                  v-if="selectedCompanyData"
-                  :width="chartWidth"
-                  :height="selectedCompanyData.gpg.length * (gpgBarHeight + barSpacing)" >
-                  <g
-                    v-for="(company, i) in selectedCompanyData.gpg"
-                    :key="company.subCo"
-                    :transform="'translate(0, ' + ((barSpacing + gpgBarHeight) * i) + ')'"
-                    >
+                <div v-if="selectedCompanyData.gpgMen.length>0">
+                   <p>The chart shows the date in the year where a
+                   <strong>man</strong> effectively begins working without
+                   pay.</p>
+                  <pay-gap-chart
+                    v-if="selectedCompany && selectedCompanyData.gpgMen.length > 0"
+                    :gpg-rows="selectedCompanyData.gpgMen"
+                    :chart-anim-fraction="chartAnimFraction"
+                    :is-mobile="isMobile"
+                    />
+                </div>
 
-                    <!-- company name -->
-                    <text
-                      dy="14"
-                      x="0"
-                      y="0"
-                      >{{company.subCo}}</text>
-
-                    <!-- bars -->
-                    <rect
-                      :x="gpgTextWidth"
-                      y="0"
-                      :width="chartWidth - gpgTextWidth"
-                      :height="gpgBarHeight"
-                      fill="white"
-                      stroke="none"
-                      />
-                    <!-- data bit -->
-                    <rect
-                      :x="gpgTextWidth + chartData.gpg[i].x"
-                      y="0"
-                      :width="chartWidth - gpgTextWidth - chartData.gpg[i].x"
-                      :height="gpgBarHeight"
-                      fill="#b70000"
-                      stroke="none"
-                      />
-                    <text
-                      text-anchor="end"
-                      :x="gpgTextWidth + chartData.gpg[i].x - 8"
-                      class="et_ftse__gpg-date"
-                      y="0"
-                      dy="14"
-                      >{{ chartData.gpg[i].date }}</text>
-                    <!-- outline on top -->
-                    <rect
-                      :x="gpgTextWidth"
-                      y="0.5"
-                      :width="chartWidth - gpgTextWidth"
-                      :height="gpgBarHeight"
-                      fill="none"
-                      stroke-width="1"
-                      opacity="0.2"
-                      stroke="black"
-                      />
-                  </g>
-                </svg>
-              </div>
-              <div v-if="selectedCompany && selectedCompanyData.gpg.length == 0">
-                <p>Sorry, we don't have any gender pay gap data for {{selectedCompany}}.</p>
+                <div v-if="(selectedCompanyData.gpg.length + selectedCompanyData.gpgMen.length) == 0">
+                  <p>Sorry, we don't have any gender pay gap data for {{selectedCompany}}.</p>
+                </div>
               </div>
 						</div>
 						<div class="et_ftse__gpg-bonus"
@@ -459,7 +534,7 @@ class Stats {
 								</g>
 							</svg>
 							<p v-if="selectedCompanyData && selectedCompanyData.worstBonusGap" >Women's average bonus at <strong>{{selectedCompanyData.worstBonusGap.Company}}</strong>
-							is {{selectedCompanyData.worstBonusGap.meanBonus2018}}% less than men's.</p>
+							is {{selectedCompanyData.worstBonusGap.meanBonus}}% less than men's.</p>
 						</div>
 
           </div><!-- /gpg data -->
@@ -476,37 +551,60 @@ class Stats {
 
     for (row of companyData) {
       if (row.company) {
+        if ((typeof row.hourly) === 'string') {
+          row.hourly = parseFloat(row.hourly.replace(',',''));
+        }
         d[row.company] = {
           hourlyCEOPay: row.hourly,
           union: row.union ? true : false,
           livingWage: (row.livingwage === 'Y') ? true : false,
           gpg: [],
+          gpgMen: [],
           worstBonusGap: null,
         };
       }
     }
     for (row of gpgData) {
+
+      if (row.meanSalary === null) {
+        // Ignore this row, there's no data.
+        continue;
+      }
       if (row['Parent Company'] && d[row['Parent Company']]) {
         // Found match.
         mainCo = d[row['Parent Company']];
 
-        // Exclude companies who have negative Gender pay gaps.
-        if (row.meanSalary2018 >= 0) {
+        // Tidy up case on subco
+        if (typeof row.Company === 'string') {
+          row.Company = row.Company.replace(/\w\w\w+/g, name => (name.substr(0, 1).toUpperCase() + name.substr(1).toLowerCase())).replace("'S" , "'s");
+        }
+
+        if (row.meanSalary >= 0) {
+          // Women are less well paid (or equally)
           mainCo.gpg.push({
             subCo: row.Company,
-            gpgSalary: row.meanSalary2018,
-            gpgBonus: row.meanBonus2018,
-            gpgSalaryOld: row.meanSalary2017,
-            gpgBonusOld: row.meanBonus2017,
+            gpgSalary: row.meanSalary
           });
         }
-        if (row.meanBonus2018 > 0) {
-          if (mainCo.worstBonusGap === null || mainCo.worstBonusGap.gpgBonus < row.meanBonus2018) {
+        else if (row.meanSalary < 0) {
+          // Men less well paid
+          mainCo.gpgMen.push({
+            subCo: row.Company,
+            gpgSalary: row.meanSalary
+          });
+        }
+        if (row.meanBonus > 0) {
+          if (mainCo.worstBonusGap === null || mainCo.worstBonusGap.meanBonus < row.meanBonus) {
             mainCo.worstBonusGap = row;
           }
         }
       }
+      else {
+        console.log("Error parsing gpg data row: ", row);
+      }
     }
+
+
     return d;
   }
 }
