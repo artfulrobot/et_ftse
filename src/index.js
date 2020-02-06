@@ -580,7 +580,7 @@ class Stats {
 
         // Tidy up case on subco
         if (typeof row.Company === 'string') {
-          row.Company = row.Company.replace(/\w\w\w+/g, name => (name.substr(0, 1).toUpperCase() + name.substr(1).toLowerCase())).replace("'S" , "'s");
+          row.Company = row.Company.replace(/\w\w\w\w+/g, name => (name.substr(0, 1).toUpperCase() + name.substr(1).toLowerCase())).replace("'S" , "'s");
         }
 
         if (row.meanSalary >= 0) {
