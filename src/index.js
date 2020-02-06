@@ -82,7 +82,7 @@ class Stats {
           if (this.selectedCompany) {
             d.push({name: 'CEO Pay',
               hourly: this.selectedCompanyData.hourlyCEOPay * Math.pow(this.chartAnimFraction,5),
-              fill: '#b70000'
+              fill: '#caa256'
             });
           }
           else {
@@ -389,7 +389,7 @@ class Stats {
 						<div class="et_ftse__company-icons" >
 							<div class="et_ftse-union">
 								<span v-if="selectedCompanyData && selectedCompanyData.union" class="good">✔ Recognises unions</span>
-								<span v-else-if="selectedCompanyData && !selectedCompanyData.union" class="bad">✖ No union recognition</span>
+								<span v-else-if="selectedCompanyData && !selectedCompanyData.union" class="bad">✖ No evidence of union recognition</span>
 								<span v-else class="meh">? Union recognition</span>
 							</div>
 							<div class="et_ftse-livingwage">
@@ -485,7 +485,9 @@ class Stats {
                 <div v-if="selectedCompanyData.gpg.length>0">
                    <p>The chart shows the date in the year where a
                    <strong>woman</strong> effectively begins working without
-                   pay.</p>
+                   pay. The red at the right of the bar represents the amount
+                   of the year that a woman is effectively working for free as
+                   compared with a male colleague. </p>
                   <pay-gap-chart
                     v-if="selectedCompanyData.gpg.length > 0"
                     :gpg-rows="selectedCompanyData.gpg"
@@ -497,7 +499,9 @@ class Stats {
                 <div v-if="selectedCompanyData.gpgMen.length>0">
                    <p>The chart shows the date in the year where a
                    <strong>man</strong> effectively begins working without
-                   pay.</p>
+                   pay. The red at the right of the bar represents the amount
+                   of the year that a man is effectively working for free as
+                   compared with a female colleague. </p>
                   <pay-gap-chart
                     v-if="selectedCompany && selectedCompanyData.gpgMen.length > 0"
                     :gpg-rows="selectedCompanyData.gpgMen"
