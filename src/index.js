@@ -9,12 +9,13 @@ class Stats {
     this.vueApp = new Vue({
       el: el,
       data: {
+        // The order of these is important (index 0 referred to in code for min wage)
         national: [
-          { name: 'Minimum wage', hourly: 7.83 },
-          { name: 'Lower Quartile wage', hourly: 8.5 },
-          { name: 'Median wage', hourly: 11.83 },
-          { name: 'Mean wage', hourly: 14.46 },
-          { name: 'Upper Quartile wage', hourly: 17.71 },
+          { name: 'Minimum wage', hourly: 7.83 },        // 14250/52/12
+          { name: 'Lower Quartile wage', hourly: 8.51 }, // 15480÷52÷35
+          { name: 'Median wage', hourly: 13.68 },        // 24897÷52÷35
+          { name: 'Mean wage', hourly: 16.83 },          // 30629÷52÷35
+          { name: 'Upper Quartile wage', hourly: 20.72 },// 37715÷52÷35
         ],
         companyData: this.parseData(companyData, gpgData),
         selectedCompany: null,
@@ -115,7 +116,9 @@ class Stats {
               path: 'M ' + (i*amountPerTick*scale) + ',-6 l0,6 l' + (amountPerTick*scale) + ',0 l0,-6'
             });
           }
-          xTicks[i-1].path = null;
+          if (i>0) {
+            xTicks[i-1].path = null;
+          }
 
           var bonusPie = '';
 					var bonusGap = 0.00001;
@@ -161,26 +164,13 @@ class Stats {
 
           this.selectedCompanyAnim = null;
           this.chartAnimStart = null;
+          console.log({selectedCompany: this.selectedCompany, data: this.companyData[this.selectedCompany]});
 
           // Figure out hours before they have earnt the minimum wage.
           if (this.selectedCompany) {
             this.selectedCompanyData = this.companyData[this.selectedCompany];
             var cfRate = this.national[0].hourly;
-            /*
-            if (this.national[0].hourly * 7 * 260 / this.selectedCompanyData.hourlyCEOPay <= 8) {
-              cfRate = this.national[0].hourly;
-              this.hoursToYearsUnit = 'someone on minimum wage earns in a <strong>year</strong>';
-              this.hoursToYears = this.national[0].hourly * 7 * 260 / this.selectedCompanyData.hourlyCEOPay;
-            }
-            else if (this.national[3].hourly * 7 * 260 / this.selectedCompanyData.hourlyCEOPay <= 8) {
-              cfRate = this.national[3].hourly;
-              this.hoursToYearsUnit = 'someone on average wage earns in a <strong>year</strong>';
-              this.hoursToYears = this.national[0].hourly * 7 * 260 / this.selectedCompanyData.hourlyCEOPay;
-            }
-            else // ...
-            */
-            cfRate = this.national[0].hourly;
-            this.hoursToYears = this.national[0].hourly * 7 * 260/12 / this.selectedCompanyData.hourlyCEOPay;
+            this.hoursToYears = cfRate * 7 * 261/12 / this.selectedCompanyData.hourlyCEOPay;
             this.hoursToYearsUnit = 'someone on minimum wage earns in a <strong>month</strong>';
 
             this.minsRotationMax = (this.hoursToYears * 60 % 60)/60;
@@ -558,8 +548,13 @@ class Stats {
         if ((typeof row.hourly) === 'string') {
           row.hourly = parseFloat(row.hourly.replace(',',''));
         }
+        const rtcmType = typeof row['ratio to company median'];
+
+        //console.log({row, typeof: typeof row['ratio to company median']});
+
         d[row.company] = {
-          hourlyCEOPay: row.hourly,
+          hourlyCEOPay: row.annual / 260 / 7,
+          ratioToMedian: rtcmType === 'number' ? row['ratio to company median'] : null,
           union: row.union ? true : false,
           livingWage: (row.livingwage === 'Y') ? true : false,
           gpg: [],
