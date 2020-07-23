@@ -81,10 +81,22 @@ class Stats {
           var d = [];
           var max = 0;
           if (this.selectedCompany) {
-            d.push({name: 'CEO Pay',
-              hourly: this.selectedCompanyData.hourlyCEOPay * Math.pow(this.chartAnimFraction,5),
+
+            var ceoPay = this.selectedCompanyData.hourlyCEOPay * Math.pow(this.chartAnimFraction,5);
+
+            d.push({
+              name: 'CEO pay',
+              hourly: ceoPay,
               fill: '#caa256'
             });
+
+            if (this.selectedCompanyData.ratioToMedian) {
+              d.push({
+                name: 'Average employee pay',
+                hourly: ceoPay / this.selectedCompanyData.ratioToMedian,
+                fill: blue
+              });
+            }
           }
           else {
             d.push({
