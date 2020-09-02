@@ -3,6 +3,9 @@ import gpgData from './gpg.csv';
 import quid from './pound.png';
 
 import './etftse.scss';
+import 'vue-search-select/dist/VueSearchSelect.css';
+import { ModelSelect } from 'vue-search-select';
+
 
 class Stats {
   constructor(el) {
@@ -73,7 +76,7 @@ class Stats {
         companyNames() {
           var a = Object.keys(this.companyData);
           a.sort();
-          return a;
+          return a.map( n => ({ value: n, text: n }) )
         },
         chartData() {
 
@@ -178,13 +181,13 @@ class Stats {
           this.chartAnimStart = null;
           console.log({selectedCompany: this.selectedCompany, data: this.companyData[this.selectedCompany]});
 
-          // Figure out hours before they have earnt the minimum wage.
           if (this.selectedCompany) {
+
+            // Figure out hours before they have earnt the minimum wage.
             this.selectedCompanyData = this.companyData[this.selectedCompany];
             var cfRate = this.national[0].hourly;
             this.hoursToYears = cfRate * 7 * 261/12 / this.selectedCompanyData.hourlyCEOPay;
             this.hoursToYearsUnit = 'someone on minimum wage earns in a <strong>month</strong>';
-
             this.minsRotationMax = (this.hoursToYears * 60 % 60)/60;
             if (this.hoursToYears <= 5) {
               this.minsRotationMax = (this.hoursToYears * 60)/60;
@@ -194,22 +197,22 @@ class Stats {
               this.minsRotationMax = (this.hoursToYears * 60 % 60)/60 + 5;
             }
 
+            // Begin animation
             requestAnimationFrame(this.chartAnimFrame.bind(this));
           }
           else {
             this.hoursToYears = 0;
             this.selectedCompanyData = null;
           }
-
-
         },
         recalculateAvailableWidth() {
+
           this.availableWidth = this.$el.offsetWidth;
 
           this.chartWidth = this.$refs.ceochart.offsetWidth - 32;
           const salaryTextWidthAllowance = 80;
 
-          if (this.chartWidth < 500) {
+          if (this.chartWidth < 500 ) {
             this.chartBarX = this.chartPadding;
             this.chartTextX = this.chartPadding;
             this.chartTextAnchor = 'start';
@@ -242,6 +245,7 @@ class Stats {
         }
       },
       components: {
+        ModelSelect,
         payGapChart: {
           data() {
             return {
@@ -327,7 +331,8 @@ class Stats {
                       dy="14"
                       x="0"
                       y="0"
-                      >{{company.subCo}}</text>
+                      ><tspan fill="#b70000">{{company.gpgSalaryFormatted}}% </tspan>
+                      {{company.subCo}}</text>
 
                     <!-- background bar -->
                     <rect
@@ -376,11 +381,10 @@ class Stats {
         <form>
           <div>
             <label for="et_ftse-company">Company</label>
-            <select id="et_ftse-company" name="company"
-              v-model="selectedCompany">
-              <option v-for="company in companyNames"
-                :value="company" >{{ company }}</option>
-            </select>
+            <model-select id="et_ftse-company" name="company"
+              v-model="selectedCompany"
+              :options="companyNames"
+              ></model-select>
             <button @click.prevent="selectedCompany=null" >Reset</button>
           </div>
         </form>
@@ -476,6 +480,10 @@ class Stats {
                 <strong>each day</strong> the CEO has been paid the same as
                 <span v-html="hoursToYearsUnit" ></span>.
               </div>
+              <div class="et_ftse-ceo-clock__ratio-text"
+                v-if="selectedCompanyData && selectedCompanyData.ratioToMedianFormatted">
+                There is a <span>1:{{selectedCompanyData.ratioToMedianFormatted}}</span> ratio within the company of median employee pay:CEO pay.
+              </div>
             </div>
           </div><!-- /.et_ftse-row for CEO chart -->
 
@@ -489,12 +497,12 @@ class Stats {
                    <strong>woman</strong> effectively begins working without
                    pay. The red at the right of the bar represents the amount
                    of the year that a woman is effectively working for free as
-                   compared with a male colleague. </p>
+                   compared with a male colleague.</p>
                   <pay-gap-chart
                     v-if="selectedCompanyData.gpg.length > 0"
                     :gpg-rows="selectedCompanyData.gpg"
                     :chart-anim-fraction="chartAnimFraction"
-                    :is-mobile="isMobile"
+                    :is-mobile="isMobile || selectedCompanyData.longSubsiduaryNames"
                     />
                 </div>
 
@@ -508,7 +516,7 @@ class Stats {
                     v-if="selectedCompany && selectedCompanyData.gpgMen.length > 0"
                     :gpg-rows="selectedCompanyData.gpgMen"
                     :chart-anim-fraction="chartAnimFraction"
-                    :is-mobile="isMobile"
+                    :is-mobile="isMobile || selectedCompanyData.longSubsiduaryNames"
                     />
                 </div>
 
@@ -539,7 +547,7 @@ class Stats {
 									/>
 								</g>
 							</svg>
-							<p v-if="selectedCompanyData && selectedCompanyData.worstBonusGap" >Women's average bonus at <strong>{{selectedCompanyData.worstBonusGap.Company}}</strong>
+							<p v-if="selectedCompanyData && selectedCompanyData.worstBonusGap" >Women's average bonus at <strong>{{selectedCompanyData.worstBonusGap.Company}}</strong> (a subsiduary of <strong>{{selectedCompany}}</strong>)
 							is {{selectedCompanyData.worstBonusGap.meanBonus}}% less than men's.</p>
 						</div>
 
@@ -567,10 +575,12 @@ class Stats {
         d[row.company] = {
           hourlyCEOPay: row.annual / 260 / 7,
           ratioToMedian: rtcmType === 'number' ? row['ratio to company median'] : null,
+          ratioToMedianFormatted: rtcmType === 'number' ? Math.round(row['ratio to company median']*10)/10 : null,
           union: row.union ? true : false,
           livingWage: (row.livingwage === 'Y') ? true : false,
           gpg: [],
           gpgMen: [],
+          longSubsiduaryNames: false,
           worstBonusGap: null,
         };
       }
@@ -588,20 +598,23 @@ class Stats {
         // Tidy up case on subco
         if (typeof row.Company === 'string') {
           row.Company = row.Company.replace(/\w\w\w\w+/g, name => (name.substr(0, 1).toUpperCase() + name.substr(1).toLowerCase())).replace("'S" , "'s");
+          mainCo.longSubsiduaryNames |= row.Company.length > 20;
         }
 
         if (row.meanSalary >= 0) {
           // Women are less well paid (or equally)
           mainCo.gpg.push({
             subCo: row.Company,
-            gpgSalary: row.meanSalary
+            gpgSalary: row.meanSalary,
+            gpgSalaryFormatted: row.meanSalary ? Math.round(row.meanSalary*10)/10 : ''
           });
         }
         else if (row.meanSalary < 0) {
           // Men less well paid
           mainCo.gpgMen.push({
             subCo: row.Company,
-            gpgSalary: row.meanSalary
+            gpgSalary: row.meanSalary,
+            gpgSalaryFormatted: row.meanSalary ? Math.round(-row.meanSalary*10)/10 : ''
           });
         }
         if (row.meanBonus > 0) {

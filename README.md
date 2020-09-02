@@ -4,6 +4,9 @@
 
 Run `npm run watch` or `npm run build`
 
+The searchable select element is provided by
+https://www.npmjs.com/package/vue-search-select which has a MIT license.
+
 ## Data
 
 The data is pulled from two csv files, `companies.csv` and `gpg.csv`.
