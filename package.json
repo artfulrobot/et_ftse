@@ -18,7 +18,8 @@
   "homepage": "https://github.com/artfulrobot/et_ftse#readme",
   "dependencies": {
     "lodash": "^4.17.20",
-    "vue-search-select": "^2.9.3"
+    "vue-search-select": "^2.9.3",
+    "vue-select": "^3.10.8"
   },
   "devDependencies": {
     "@babel/core": "^7.11.5",

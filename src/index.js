@@ -2,9 +2,9 @@ import companyData from './companies.csv';
 import gpgData from './gpg.csv';
 import quid from './pound.png';
 
+import 'vue-select/dist/vue-select.css';
 import './etftse.scss';
-import 'vue-search-select/dist/VueSearchSelect.css';
-import { ModelSelect } from 'vue-search-select';
+import vSelect from 'vue-select';
 
 
 class Stats {
@@ -76,7 +76,7 @@ class Stats {
         companyNames() {
           var a = Object.keys(this.companyData);
           a.sort();
-          return a.map( n => ({ value: n, text: n }) )
+          return a;
         },
         chartData() {
 
@@ -245,7 +245,7 @@ class Stats {
         }
       },
       components: {
-        ModelSelect,
+        vSelect,
         payGapChart: {
           data() {
             return {
@@ -381,11 +381,10 @@ class Stats {
         <form>
           <div>
             <label for="et_ftse-company">Company</label>
-            <model-select id="et_ftse-company" name="company"
+            <v-select id="et_ftse-company" name="company"
               v-model="selectedCompany"
               :options="companyNames"
-              ></model-select>
-            <button @click.prevent="selectedCompany=null" >Reset</button>
+              ></v-select>
           </div>
         </form>
 

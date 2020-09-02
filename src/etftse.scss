@@ -108,3 +108,10 @@ $red: #b70000;
   stroke-opacity: 0.2;
   stroke: black;
 }
+
+
+#et_ftse-company .vs__search::placeholder,
+#et_ftse-company .vs__dropdown-toggle,
+#et_ftse-company .vs__dropdown-menu {
+  background: white;
+}
