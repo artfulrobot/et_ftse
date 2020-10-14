@@ -1,0 +1,4 @@
+name = Equality Trust Fair Pay FTSE Data Dashboard
+description = "Provides an interactive way to explore CEO pay and gender pay gaps"
+core = 7.x
+files[] = et_ftse.module

@@ -7,7 +7,7 @@ module.exports = {
   mode: 'production',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'drupal/dist')
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -30,12 +30,6 @@ module.exports = {
           'style-loader',
           'css-loader'
         ]
-      },
-      {
-        test: /\.(png|svg|jpg|gif)$/,
-          use: [
-            'file-loader'
-          ]
       },
       {
         test: /\.s[ac]ss$/i,

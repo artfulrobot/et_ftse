@@ -1,6 +1,5 @@
 import companyData from './companies.csv';
 import gpgData from './gpg.csv';
-import quid from './pound.png';
 
 import 'vue-select/dist/vue-select.css';
 import './etftse.scss';
@@ -8,10 +7,11 @@ import vSelect from 'vue-select';
 
 
 class Stats {
-  constructor(el) {
+  constructor(el, srcPath) {
     this.vueApp = new Vue({
       el: el,
       data: {
+        srcPath,
         // The order of these is important (index 0 referred to in code for min wage)
         national: [
           { name: 'Minimum wage', hourly: 7.83 },        // 14250/52/12
@@ -540,7 +540,7 @@ class Stats {
 										fill="white"
 										/>
 								<g :transform="'translate(' + gpgBonusRadius + ' ' + gpgBonusRadius + '), rotate(-90)'" clip-path="url(#et_ftse__bonusPie-clip)">
-									<image href="${quid}" :width="gpgBonusRadius*2" :height="gpgBonusRadius*2"
+									<image href="${srcPath}/pound.png" :width="gpgBonusRadius*2" :height="gpgBonusRadius*2"
 										:x="-gpgBonusRadius"
 										:y="-gpgBonusRadius"
 									/>

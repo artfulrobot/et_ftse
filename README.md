@@ -7,9 +7,13 @@ Run `npm run watch` or `npm run build`
 The searchable select element is provided by
 https://www.npmjs.com/package/vuejs-select which has a MIT license.
 
+You'll also need to download https://cdn.jsdelivr.net/npm/vue and put it
+at drupal/vue.min.js
+
 ## Data
 
 The data is pulled from two csv files, `companies.csv` and `gpg.csv`.
+**These are not included in the code source stored at Github**.
 
 ### Companies CSV
 
