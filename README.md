@@ -1,19 +1,42 @@
 # FTSE 100 interactive stats
 
-## Building
+## Data
 
-Run `npm run watch` or `npm run build`
+The data is pulled from two csv files, `companies.csv` and `gpg.csv`.
+**These are not included in the code source stored at Github**. They need
+to be placed in the `src/` directory before the project is built.
 
-The searchable select element is provided by
+## Building (developers)
+
+Provide the data files. Then run `npm run watch` or `npm run build`. This creates a bundle.js file
+in `drupal/dist/bundle.js`. There's also an html file in there that you
+can use locally while developing.
+
+Nb. The searchable select element is provided by
 https://www.npmjs.com/package/vuejs-select which has a MIT license.
 
 You'll also need to download https://cdn.jsdelivr.net/npm/vue and put it
 at drupal/vue.min.js
 
-## Data
+## Building the Drupal module for distribution
 
-The data is pulled from two csv files, `companies.csv` and `gpg.csv`.
-**These are not included in the code source stored at Github**.
+Place data files in src/ then, from the project root:
+
+
+After the above, everything you need is in the drupal dir, but to make it
+easy to install, best to change the name of that to `et_ftse`. i.e. from
+the project's root
+
+```bash
+npm run build
+http -d https://cdn.jsdelivr.net/npm/vue -o drupal/vue.min.js
+cp -ar drupal et_ftse
+rm et_ftse/dist/index.html
+tar czf et_ftse.tar.gz et_ftse
+rm -rf et_ftse
+```
+
+
 
 ### Companies CSV
 

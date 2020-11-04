@@ -501,7 +501,7 @@ class Stats {
                     v-if="selectedCompanyData.gpg.length > 0"
                     :gpg-rows="selectedCompanyData.gpg"
                     :chart-anim-fraction="chartAnimFraction"
-                    :is-mobile="isMobile || selectedCompanyData.longSubsiduaryNames"
+                    :is-mobile="isMobile || selectedCompanyData.longSubsidiaryNames"
                     />
                 </div>
 
@@ -515,7 +515,7 @@ class Stats {
                     v-if="selectedCompany && selectedCompanyData.gpgMen.length > 0"
                     :gpg-rows="selectedCompanyData.gpgMen"
                     :chart-anim-fraction="chartAnimFraction"
-                    :is-mobile="isMobile || selectedCompanyData.longSubsiduaryNames"
+                    :is-mobile="isMobile || selectedCompanyData.longSubsidiaryNames"
                     />
                 </div>
 
@@ -546,7 +546,7 @@ class Stats {
 									/>
 								</g>
 							</svg>
-							<p v-if="selectedCompanyData && selectedCompanyData.worstBonusGap" >Women's average bonus at <strong>{{selectedCompanyData.worstBonusGap.Company}}</strong> (a subsiduary of <strong>{{selectedCompany}}</strong>)
+							<p v-if="selectedCompanyData && selectedCompanyData.worstBonusGap" >Women's average bonus at <strong>{{selectedCompanyData.worstBonusGap.Company}}</strong> (a subsidiary of <strong>{{selectedCompany}}</strong>)
 							is {{selectedCompanyData.worstBonusGap.meanBonus}}% less than men's.</p>
 						</div>
 
@@ -579,7 +579,7 @@ class Stats {
           livingWage: (row.livingwage === 'Y') ? true : false,
           gpg: [],
           gpgMen: [],
-          longSubsiduaryNames: false,
+          longSubsidiaryNames: false,
           worstBonusGap: null,
         };
       }
@@ -597,7 +597,7 @@ class Stats {
         // Tidy up case on subco
         if (typeof row.Company === 'string') {
           row.Company = row.Company.replace(/\w\w\w\w+/g, name => (name.substr(0, 1).toUpperCase() + name.substr(1).toLowerCase())).replace("'S" , "'s");
-          mainCo.longSubsiduaryNames |= row.Company.length > 20;
+          mainCo.longSubsidiaryNames |= row.Company.length > 20;
         }
 
         if (row.meanSalary >= 0) {
