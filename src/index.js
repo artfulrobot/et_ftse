@@ -14,7 +14,7 @@ class Stats {
         srcPath,
         // The order of these is important (index 0 referred to in code for min wage)
         national: [
-          { name: 'Minimum wage', hourly: 7.83 },        // 14250/52/12
+          { name: 'Minimum wage', hourly: 8.21 },        // 14942÷52÷35
           { name: 'Lower Quartile wage', hourly: 8.51 }, // 15480÷52÷35
           { name: 'Median wage', hourly: 13.68 },        // 24897÷52÷35
           { name: 'Mean wage', hourly: 16.83 },          // 30629÷52÷35
@@ -25,7 +25,7 @@ class Stats {
         selectedCompanyData: null,
         chartPadding: 12,
         chartWidth: 600,
-        chartHeight: 300,
+        chartHeight: 340,
         barMaxWidth: 250,
         chartBarX: 200,
         chartTextX: 16,

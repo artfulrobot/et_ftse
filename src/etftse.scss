@@ -4,6 +4,7 @@ $light_grey: #ededed;
 $green: #00945f;
 $red: #b70000;
 
+
 // Block layout
 .et_ftse-container {
   background: $light_grey;
@@ -110,8 +111,20 @@ $red: #b70000;
 }
 
 
-#et_ftse-company .vs__search::placeholder,
-#et_ftse-company .vs__dropdown-toggle,
-#et_ftse-company .vs__dropdown-menu {
-  background: white;
+#et_ftse-company {
+  .vs__search::placeholder,
+  .vs__dropdown-toggle,
+  .vs__dropdown-menu {
+    background: white;
+  }
+
+  // Override styles on the host site.
+  ul {
+    margin: 0;
+  }
+  &>li {
+    padding: 0 1rem;
+  }
+
 }
+
