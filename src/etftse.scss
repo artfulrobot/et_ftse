@@ -117,6 +117,13 @@ $red: #b70000;
   .vs__dropdown-menu {
     background: white;
   }
+  .vs__clear {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .vs__open-indicator {
+    cursor: pointer;
+  }
 
   // Override styles on the host site.
   ul {
