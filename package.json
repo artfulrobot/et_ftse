@@ -1,7 +1,7 @@
 {
   "name": "et_ftse",
-  "version": "1.0.0",
-  "description": "Interactive infographic",
+  "version": "1.3.0",
+  "description": "Interactive infographic July 2021 update",
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch"

@@ -623,7 +623,7 @@ class Stats {
         }
       }
       else {
-        console.log("Error parsing gpg data row: ", row);
+        console.log("Error parsing gpg data row, likely Parent Company not matching: ", row);
       }
     }
 
