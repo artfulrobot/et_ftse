@@ -8,9 +8,14 @@ to be placed in the `src/` directory before the project is built.
 
 ## Building (developers)
 
-Provide the data files. Then run `npm run watch` or `npm run build`. This creates a bundle.js file
-in `drupal/dist/bundle.js`. There's also an html file in there that you
-can use locally while developing.
+1. Provide the data files (see below).
+
+2. Install libs: `yarn install`
+
+2. Run `npx mix -p` to build for production. `npx mix watch` for dev. This
+   creates a bundle.js file in `drupal/dist/bundle.js`. There's also an
+   html file in there that you can use locally while developing (but some
+   stuff doesn't work without http).
 
 Nb. The searchable select element is provided by
 https://www.npmjs.com/package/vuejs-select which has a MIT license.
@@ -18,24 +23,25 @@ https://www.npmjs.com/package/vuejs-select which has a MIT license.
 You'll also need to download https://cdn.jsdelivr.net/npm/vue and put it
 at drupal/vue.min.js
 
+(Note: moving from my original webpack config to laravel mix reduced the
+bundle size slightly.)
+
 ## Building the Drupal module for distribution
 
 Place data files in src/ then, from the project root:
-
 
 After the above, everything you need is in the drupal dir, but to make it
 easy to install, best to change the name of that to `et_ftse`. i.e. from
 the project's root
 
 ```bash
-npm run build
+npx mix -p
 http -d https://cdn.jsdelivr.net/npm/vue -o drupal/vue.min.js
 cp -ar drupal et_ftse
 rm et_ftse/dist/index.html
 tar czf et_ftse.tar.gz et_ftse
 rm -rf et_ftse
 ```
-
 
 
 ### Companies CSV
