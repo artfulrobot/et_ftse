@@ -63,3 +63,4 @@ src/*.csv
 drupal/vue.min.js
 
 drupal/vue.js
+mix-manifest.json
