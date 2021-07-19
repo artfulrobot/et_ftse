@@ -70,7 +70,7 @@ $red: #b70000;
 .et_ftse-ceo-clock {
   display: flex;
   flex-wrap: wrap;
-  align-content: start;
+  align-content: flex-start;
 }
 .et_ftse-ceo-clock__clock-container { padding: 0 0.5rem; flex: 1 0 150px; }
 .et_ftse-ceo-clock__clock-container svg { margin: 0 auto; display: block; }
