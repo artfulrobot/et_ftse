@@ -18,14 +18,14 @@
   "homepage": "https://github.com/artfulrobot/et_ftse#readme",
   "dependencies": {
     "lodash": "^4.17.20",
-    "vue-select": "^3.10.8"
+    "vue-select": "^3.10.8",
+    "vue": "^2.6.14"
   },
   "devDependencies": {
     "csv-loader": "^3.0.2",
     "laravel-mix": "^6.0.25",
     "sass": "^1.35.2",
     "sass-loader": "^12.1.0",
-    "vue": "^2.6.14",
     "vue-loader": "^15.9.7",
     "vue-template-compiler": "^2.6.14"
   }

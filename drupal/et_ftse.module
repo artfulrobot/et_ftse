@@ -30,7 +30,7 @@ function et_ftse_block_view($delta='') {
     $path = drupal_get_path('module', 'et_ftse');
     drupal_add_js(['et_ftse' => ['path' => "/$path/"]], 'setting');
     // VueJS required.
-    drupal_add_js("$path/vue.min.js");
+    // Not since 1.3, bundling it in saves 10k drupal_add_js("$path/vue.min.js");
     // Include our app
     drupal_add_js("$path/dist/bundle.js");
     // JS to boot the app

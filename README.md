@@ -20,9 +20,6 @@ to be placed in the `src/` directory before the project is built.
 Nb. The searchable select element is provided by
 https://www.npmjs.com/package/vuejs-select which has a MIT license.
 
-You'll also need to download https://cdn.jsdelivr.net/npm/vue and put it
-at drupal/vue.min.js
-
 (Note: moving from my original webpack config to laravel mix reduced the
 bundle size slightly.)
 
@@ -36,7 +33,6 @@ the project's root
 
 ```bash
 npx mix -p
-http -d https://cdn.jsdelivr.net/npm/vue -o drupal/vue.min.js
 cp -ar drupal et_ftse
 rm et_ftse/dist/index.html
 tar czf et_ftse.tar.gz et_ftse
