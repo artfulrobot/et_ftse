@@ -162,7 +162,7 @@
 										fill="white"
 										/>
 								<g :transform="'translate(' + gpgBonusRadius + ' ' + gpgBonusRadius + '), rotate(-90)'" clip-path="url(#et_ftse__bonusPie-clip)">
-									<image href="${srcPath}/pound.png" :width="gpgBonusRadius*2" :height="gpgBonusRadius*2"
+									<image :href="srcPath + '/pound.png'" :width="gpgBonusRadius*2" :height="gpgBonusRadius*2"
 										:x="-gpgBonusRadius"
 										:y="-gpgBonusRadius"
 									/>
@@ -188,6 +188,7 @@ export default {
   components: {PayGapChart, vSelect},
   props: { srcPath: String },
   data() {
+    console.log(companyData);
     return {
       // The order of these is important (index 0 referred to in code for min wage)
       national: [
