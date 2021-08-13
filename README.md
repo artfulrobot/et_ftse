@@ -52,7 +52,7 @@ The top line column headers should be: company,hourly,union,livingwage
   to the median employee at that company.
 - `union` string of recognised union names, e.g. "Unite, BFAWU". It is not
   parsed.
-- `livingwage` string Y or N
+- `living wage` string Y or N
 
 ### Gender Pay Gap CSV
 

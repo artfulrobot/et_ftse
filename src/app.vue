@@ -188,15 +188,14 @@ export default {
   components: {PayGapChart, vSelect},
   props: { srcPath: String },
   data() {
-    console.log(companyData);
     return {
       // The order of these is important (index 0 referred to in code for min wage)
       national: [
-        { name: 'Minimum wage', hourly: 8.21 },        // 14942÷52÷35
-        { name: 'Lower Quartile wage', hourly: 8.51 }, // 15480÷52÷35
-        { name: 'Median wage', hourly: 13.68 },        // 24897÷52÷35
-        { name: 'Mean wage', hourly: 16.83 },          // 30629÷52÷35
-        { name: 'Upper Quartile wage', hourly: 20.72 },// 37715÷52÷35
+        { name: 'Minimum wage', hourly: 8.91 },
+        { name: 'Lower Quartile wage', hourly: 12.67 },// 23068 ÷52÷35
+        { name: 'Median wage', hourly: 17.29 },        // 31461 ÷52÷35
+        { name: 'Mean wage', hourly: 20.24 },          // 36834 ÷52÷35
+        { name: 'Upper Quartile wage', hourly: 24.46 },// 44513 ÷52÷35
       ],
       companyData: this.parseData(companyData, gpgData),
       selectedCompany: null,
@@ -399,7 +398,7 @@ export default {
             ratioToMedian: rtcmType === 'number' ? row['ratio to company median'] : null,
             ratioToMedianFormatted: rtcmType === 'number' ? Math.round(row['ratio to company median']*10)/10 : null,
             union: row.union ? true : false,
-            livingWage: (row.livingwage === 'Y') ? true : false,
+            livingWage: (row['living wage'] === 'Y') ? true : false,
             gpg: [],
             gpgMen: [],
             longSubsidiaryNames: false,
@@ -460,7 +459,7 @@ export default {
 
       this.selectedCompanyAnim = null;
       this.chartAnimStart = null;
-      console.log({selectedCompany: this.selectedCompany, data: this.companyData[this.selectedCompany]});
+      // console.log({selectedCompany: this.selectedCompany, data: this.companyData[this.selectedCompany]});
 
       if (this.selectedCompany) {
 
