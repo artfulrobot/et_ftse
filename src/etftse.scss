@@ -124,7 +124,6 @@ $red: #b70000;
   .vs__open-indicator {
     cursor: pointer;
   }
-
   // Override styles on the host site.
   ul {
     margin: 0;
@@ -134,4 +133,10 @@ $red: #b70000;
   }
 
 }
+// Override site CSS Sep 2021
+.et_ftse-container li.vs__dropdown-option {
+  padding-left: 1rem;
+  font-size: 0.825em;
+}
+
 
